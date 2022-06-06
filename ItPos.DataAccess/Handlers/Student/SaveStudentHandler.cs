@@ -1,5 +1,6 @@
 ﻿using ItPos.DataAccess.User;
 using ItPos.Domain.DTO.StudentInfo;
+using ItPos.Domain.DTO.User;
 using ItPos.Domain.Exceptions;
 using ItPos.Domain.Extensions;
 using ItPos.Domain.Models;
@@ -57,7 +58,7 @@ public class SaveStudentHandler : IRequestHandler<SaveStudent, Result<StudentInf
 
     private async Task<bool> TryCreateUser(StudentInfoRequest request, CancellationToken token, StudentInfo studentInfo)
     {
-        var id = (await mediator.Send(new SaveUser(request.User), token)).ToObjectOrDefault()?.Id;
+        var id = (await mediator.Send(new SaveUser(CreateUserFromRequest(request)), token)).ToObjectOrDefault()?.Id;
         if (id is null) return false;
 
         await context.SaveChangesAsync(token);
@@ -80,12 +81,24 @@ public class SaveStudentHandler : IRequestHandler<SaveStudent, Result<StudentInf
             if (!await TryCreateUser(request, token, studentInfo))
                 return new Result<StudentInfo>(new Exception("Не удалось создать пользователя."));
         }
-        else if (user.Login != request.User.Login || user.Password != request.User.Password)
-            await mediator.Send(new SaveUser(request.User), token);
+        else if (user.Login != request.Login || user.Password != request.Password)
+            await mediator.Send(new SaveUser(CreateUserFromRequest(request)), token);
 
         request.Adapt(studentInfo, Config);
         context.Update(studentInfo);
         await context.SaveChangesAsync(token);
         return studentInfo;
+    }
+    
+    private static UserRequest CreateUserFromRequest(StudentInfoRequest request)
+    {
+        return new UserRequest
+        {
+            Group = request.Institute.ToString(),
+            Id = request.UserId,
+            Login = request.Login,
+            Password = request.Password,
+            Roles = "Student"
+        };
     }
 }

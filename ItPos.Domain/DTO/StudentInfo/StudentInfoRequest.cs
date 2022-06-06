@@ -25,6 +25,9 @@ public class StudentInfoRequest
     public string Email { get; set; }
     [Required] [Phone]
     public string Phone { get; set; }
+    public Guid? UserId { get; set; }
     [Required]
-    public UserRequest User { get; set; }
+    public string Login { get; set; }
+    [Required]
+    public string Password { get; set; }
 }
