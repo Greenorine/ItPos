@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ItPos.Domain.DTO.User;
 using ItPos.Domain.Models.User;
 
-namespace ItPos.Domain.DTO.StudentInfo;
+namespace ItPos.Domain.DTO.V1.StudentInfo;
 
 public class StudentInfoRequest
 {
@@ -25,7 +24,6 @@ public class StudentInfoRequest
     public string Email { get; set; }
     [Required] [Phone]
     public string Phone { get; set; }
-    public Guid? UserId { get; set; }
     [Required]
     public string Login { get; set; }
     [Required]

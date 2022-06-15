@@ -1,11 +1,10 @@
-﻿using ItPos.Api.Extensions;
-using ItPos.DataAccess.User;
+﻿using ItPos.DataAccess.User;
 using ItPos.Domain.DTO;
-using ItPos.Domain.DTO.User;
+using ItPos.Domain.DTO.V1.User;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ItPos.Api.Controllers.Users;
+namespace ItPos.Api.Controllers.V1.Users;
 
 [Route("api/v1/[controller]")]
 [ApiController]
@@ -22,13 +21,13 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> Get(RequestWithId request, CancellationToken token)
     {
         var result = await mediator.Send(new GetUserById(request.Id), token);
-        return result.ToResponse();
+        return Ok(result);
     }
 
     [HttpPost("save")]
     public async Task<IActionResult> Save(UserRequest request, CancellationToken token)
     {
         var result = await mediator.Send(new SaveUser(request), token);
-        return result.ToResponse();
+        return Ok(result);
     }
 }

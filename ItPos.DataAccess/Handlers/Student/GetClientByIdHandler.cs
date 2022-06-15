@@ -1,14 +1,14 @@
-﻿using ItPos.Domain.Exceptions;
-using ItPos.Domain.Models;
-using LanguageExt.Common;
+﻿using ItPos.Domain.DTO.V1.StudentInfo;
+using ItPos.Domain.Exceptions;
+using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ItPos.DataAccess.Handlers.Student;
 
-public record GetStudentById(Guid Id) : IRequest<Result<StudentInfo>>;
+public record GetStudentById(Guid Id) : IRequest<StudentInfoResponse>;
 
-public class GetClientByIdHandler : IRequestHandler<GetStudentById, Result<StudentInfo>>
+public class GetClientByIdHandler : IRequestHandler<GetStudentById, StudentInfoResponse>
 {
     private readonly ItPosDbContext context;
 
@@ -17,12 +17,15 @@ public class GetClientByIdHandler : IRequestHandler<GetStudentById, Result<Stude
         this.context = context;
     }
 
-    public async Task<Result<StudentInfo>> Handle(GetStudentById request,
+    public async Task<StudentInfoResponse> Handle(GetStudentById request,
         CancellationToken cancellationToken)
     {
-        var client =
-            await context.Students.AsNoTracking().Where(c => !c.IsDeleted)
-                .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
-        return client ?? new Result<StudentInfo>(new EntityNotFoundException(request.Id.ToString()));
+        var studentInfo = await context.Students.AsNoTracking().Include(x => x.User).Where(c => !c.IsDeleted)
+            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
+
+        if (studentInfo is null)
+            throw new EntityNotFoundException(request.Id.ToString());
+        
+        return studentInfo.Adapt<StudentInfoResponse>();
     }
 }

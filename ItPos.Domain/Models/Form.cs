@@ -5,8 +5,9 @@ namespace ItPos.Domain.Models;
 
 public class Form : IEntity
 {
-    [Column(TypeName = "jsonb")] public ICollection<FormInputField> Inputs { get; set; }
-    [Column(TypeName = "jsonb")] public ICollection<FormStage> Stages { get; set; }
+    public string Body { get; set; }
+    /*[Column(TypeName = "jsonb")] public ICollection<FormInputField> Inputs { get; set; }
+    [Column(TypeName = "jsonb")] public ICollection<FormStage> Stages { get; set; }*/
 
     #region IEntity
 
@@ -20,10 +21,10 @@ public class Form : IEntity
     #endregion
 }
 
-public class FormInputField
+/*public class FormInputField
 {
     public string Name { get; set; }
     public string Description { get; set; }
     public string Type { get; set; }
     public string Options { get; set; }
-}
+}*/

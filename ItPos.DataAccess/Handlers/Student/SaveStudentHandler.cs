@@ -1,35 +1,30 @@
 ﻿using ItPos.DataAccess.User;
-using ItPos.Domain.DTO.StudentInfo;
-using ItPos.Domain.DTO.User;
+using ItPos.Domain.DTO.V1.StudentInfo;
+using ItPos.Domain.DTO.V1.User;
 using ItPos.Domain.Exceptions;
-using ItPos.Domain.Extensions;
 using ItPos.Domain.Models;
-using LanguageExt.Common;
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ItPos.DataAccess.Handlers.Student;
 
-public record SaveStudent(StudentInfoRequest StudentData) : IRequest<Result<StudentInfo>>;
+public record SaveStudent(StudentInfoRequest StudentData) : IRequest<StudentInfoResponse>;
 
-public class SaveStudentHandler : IRequestHandler<SaveStudent, Result<StudentInfo>>
+public class SaveStudentHandler : IRequestHandler<SaveStudent, StudentInfoResponse>
 {
     private readonly ItPosDbContext context;
-    private static readonly TypeAdapterConfig Config = new();
     private readonly IMediator mediator;
 
     public SaveStudentHandler(ItPosDbContext context, IMediator mediator)
     {
         this.context = context;
         this.mediator = mediator;
-        Config.NewConfig<StudentInfoRequest, StudentInfo>().GenerateMapper(MapType.Projection).Ignore(x => x.Id!)
-            .CompileProjection();
     }
 
-    public async Task<Result<StudentInfo>> Handle(SaveStudent request, CancellationToken token)
+    public async Task<StudentInfoResponse> Handle(SaveStudent request, CancellationToken token)
     {
-        Result<StudentInfo> studentInfo;
+        StudentInfoResponse studentInfo;
         if (!request.StudentData.Id.HasValue)
             studentInfo = await CreateStudentInfo(request.StudentData, token);
         else
@@ -37,11 +32,18 @@ public class SaveStudentHandler : IRequestHandler<SaveStudent, Result<StudentInf
         return studentInfo;
     }
 
-    private async Task<Result<StudentInfo>> CreateStudentInfo(StudentInfoRequest request, CancellationToken token)
+    private async Task<StudentInfoResponse> CreateStudentInfo(StudentInfoRequest request, CancellationToken token)
     {
         var studentInfo = request.Adapt<StudentInfo>();
-        if (!await TryCreateUser(request, token, studentInfo))
-            return new Result<StudentInfo>(new Exception("Не удалось создать пользователя."));
+        try
+        {
+            studentInfo.User = await mediator.Send(new SaveUser(CreateUserFromRequest(request)), token);
+        }
+        catch (EntityExistsException ex)
+        {
+            throw new LoginIsBusyException(request.Login, ex);
+        }
+
         context.Students.Add(studentInfo);
 
         try
@@ -50,52 +52,45 @@ public class SaveStudentHandler : IRequestHandler<SaveStudent, Result<StudentInf
         }
         catch (DbUpdateException ex)
         {
-            return new Result<StudentInfo>(new EntityExistsException());
+            throw new EntityExistsException();
         }
 
-        return studentInfo;
+        return studentInfo.Adapt<StudentInfoResponse>();
     }
 
-    private async Task<bool> TryCreateUser(StudentInfoRequest request, CancellationToken token, StudentInfo studentInfo)
-    {
-        var id = (await mediator.Send(new SaveUser(CreateUserFromRequest(request)), token)).ToObjectOrDefault()?.Id;
-        if (id is null) return false;
-
-        await context.SaveChangesAsync(token);
-        studentInfo.UserId = id.Value;
-        return true;
-    }
-
-    private async Task<Result<StudentInfo>> UpdateStudentInfo(StudentInfoRequest request, CancellationToken token)
+    private async Task<StudentInfoResponse> UpdateStudentInfo(StudentInfoRequest request, CancellationToken token)
     {
         var studentInfo =
-            await context.Students.FirstOrDefaultAsync(x => x.Id == request.Id && !x.IsDeleted,
+            await context.Students.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == request.Id && !x.IsDeleted,
                 cancellationToken: token);
 
         if (studentInfo is null)
-            return new Result<StudentInfo>(new EntityNotFoundException(request.Id.ToString()));
+            throw new EntityNotFoundException(request.Id.ToString());
 
-        var user = await context.Users.FirstOrDefaultAsync(u => u.Id == studentInfo.UserId, cancellationToken: token);
-        if (user is null)
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Id == studentInfo.User.Id, cancellationToken: token);
+        try
         {
-            if (!await TryCreateUser(request, token, studentInfo))
-                return new Result<StudentInfo>(new Exception("Не удалось создать пользователя."));
+            if (user is null)
+                studentInfo.User = await mediator.Send(new SaveUser(CreateUserFromRequest(request)), token);
+            else if (user.Login != request.Login || user.Password != request.Password)
+                studentInfo.User = await mediator.Send(new SaveUser(CreateUserFromRequest(request)), token);
         }
-        else if (user.Login != request.Login || user.Password != request.Password)
-            await mediator.Send(new SaveUser(CreateUserFromRequest(request)), token);
+        catch (EntityExistsException ex)
+        {
+            throw new LoginIsBusyException(request.Login, ex);
+        }
 
-        request.Adapt(studentInfo, Config);
+        request.Adapt(studentInfo);
         context.Update(studentInfo);
         await context.SaveChangesAsync(token);
-        return studentInfo;
+        return studentInfo.Adapt<StudentInfoResponse>();
     }
-    
+
     private static UserRequest CreateUserFromRequest(StudentInfoRequest request)
     {
         return new UserRequest
         {
             Group = request.Institute.ToString(),
-            Id = request.UserId,
             Login = request.Login,
             Password = request.Password,
             Roles = "Student"

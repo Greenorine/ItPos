@@ -1,5 +1,8 @@
 ﻿using System.Reflection;
+using ItPos.Domain;
 using ItPos.Domain.Models.Response;
+using Mapster;
+using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.OpenApi.Models;
@@ -16,7 +19,7 @@ public static class ServiceExtensions
             {
                 options.InvalidModelStateResponseFactory = context =>
                 {
-                    if (context.ModelState.Exists(x => x.Key == string.Empty))
+                    if (context.ModelState.ToList().Exists(x => x.Key == string.Empty))
                         return new BadRequestObjectResult(new ResponseError("Request should be not empty"));
                     var errors = context.ModelState
                         .Where(kv => kv.Value?.ValidationState is ModelValidationState.Invalid && kv.Value.Errors.Any())
@@ -28,6 +31,14 @@ public static class ServiceExtensions
                         : new BadRequestObjectResult(new ResponseError(errors));
                 };
             });
+    }
+    
+    public static void AddMapster(this IServiceCollection services)
+    {
+        var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
+        typeAdapterConfig.Scan(typeof(AssemblyDummy).Assembly);
+        var mapperConfig = new Mapper(typeAdapterConfig);
+        services.AddSingleton<IMapper>(mapperConfig);
     }
     
     public static void AddSwagger(this IServiceCollection services)
@@ -57,8 +68,8 @@ public static class ServiceExtensions
                     {
                         Reference = new OpenApiReference
                         {
+                            Id = "Bearer",
                             Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
                         }
                     },
                     Array.Empty<string>()

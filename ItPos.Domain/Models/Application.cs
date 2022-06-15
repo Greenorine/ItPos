@@ -6,9 +6,7 @@ namespace ItPos.Domain.Models;
 public class Application : IEntity
 {
     public Guid FormId { get; set; }
-    public Guid OwnerId { get; set; }
-
-    [Column(TypeName = "jsonb")] public FormStage Stage { get; set; }
+    public Guid StudentId { get; set; }
     [Column(TypeName = "jsonb")] public ICollection<FormInput> Inputs { get; set; }
 
     #region IEntity
@@ -26,6 +24,5 @@ public class Application : IEntity
 public class FormInput
 {
     public string Name { get; set; }
-    public string Type { get; set; }
     public string Value { get; set; }
 }

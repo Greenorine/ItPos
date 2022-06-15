@@ -1,4 +1,4 @@
-﻿namespace ItPos.Domain.DTO.Offer;
+﻿namespace ItPos.Domain.DTO.V1.Offer;
 
 public class OfferRequest
 {

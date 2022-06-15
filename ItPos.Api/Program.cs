@@ -1,7 +1,9 @@
 using System.Reflection;
 using ItPos.Api.Extensions;
 using ItPos.DataAccess;
+using ItPos.Domain.Models.Response;
 using MediatR;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,7 @@ builder.Services.AddSwagger();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddMediatR(typeof(AssemblyDummy).GetTypeInfo().Assembly);
+builder.Services.AddMapster();
 builder.Services.AddEntityFrameworkNpgsql().AddDbContext<ItPosDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("pos_connection")!,
@@ -25,6 +28,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseExceptionHandler(c => c.Run(async context =>
+{
+    var exception = context.Features.Get<IExceptionHandlerPathFeature>()?.Error;
+    var response = new ResponseError(exception?.Message ?? "");
+    await context.Response.WriteAsJsonAsync(response);
+}));
 
 app.UseHttpsRedirection();
 app.UseRouting();

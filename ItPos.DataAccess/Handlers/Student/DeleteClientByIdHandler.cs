@@ -18,11 +18,12 @@ public class DeleteClientByIdHandler : INotificationHandler<DeleteStudentById>
         CancellationToken cancellationToken)
     {
         var client =
-            await context.Students.FirstOrDefaultAsync(x => x.Id == request.Id && !x.IsDeleted, cancellationToken);
+            await context.Students.Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.Id == request.Id && !x.IsDeleted, cancellationToken);
         if (client is null || client.IsDeleted) return;
         context.Remove(client);
 
-        var user = await context.Users.FirstOrDefaultAsync(x => x.Id == client.UserId && !x.IsDeleted,
+        var user = await context.Users.FirstOrDefaultAsync(x => x.Id == client.User.Id && !x.IsDeleted,
             cancellationToken);
         if (user is null) return;
         context.Remove(user);

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ItPos.Domain.DTO.User;
+﻿namespace ItPos.Domain.DTO.V1.User;
 
 public class UserRequest
 {

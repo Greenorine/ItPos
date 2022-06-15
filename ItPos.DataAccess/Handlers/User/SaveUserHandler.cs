@@ -1,16 +1,15 @@
-﻿using ItPos.Domain.DTO.User;
+﻿using ItPos.Domain.DTO.V1.User;
 using ItPos.Domain.Exceptions;
 using ItPos.Domain.Models.User;
-using LanguageExt.Common;
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ItPos.DataAccess.User;
 
-public record SaveUser(UserRequest UserData) : IRequest<Result<PosUser>>;
+public record SaveUser(UserRequest UserData) : IRequest<PosUser>;
 
-public class SaveUserHandler : IRequestHandler<SaveUser, Result<PosUser>>
+public class SaveUserHandler : IRequestHandler<SaveUser, PosUser>
 {
     private readonly ItPosDbContext context;
     private static readonly TypeAdapterConfig Config = new();
@@ -21,9 +20,9 @@ public class SaveUserHandler : IRequestHandler<SaveUser, Result<PosUser>>
         Config.NewConfig<UserRequest, PosUser>().GenerateMapper(MapType.Projection).Ignore(x => x.Id!).CompileProjection();
     }
 
-    public async Task<Result<PosUser>> Handle(SaveUser request, CancellationToken token)
+    public async Task<PosUser> Handle(SaveUser request, CancellationToken token)
     {
-        Result<PosUser> clientInfo;
+        PosUser clientInfo;
         if (!request.UserData.Id.HasValue)
             clientInfo = await CreateUserInfo(request.UserData, token);
         else
@@ -31,7 +30,7 @@ public class SaveUserHandler : IRequestHandler<SaveUser, Result<PosUser>>
         return clientInfo;
     }
 
-    private async Task<Result<PosUser>> CreateUserInfo(UserRequest request, CancellationToken token)
+    private async Task<PosUser> CreateUserInfo(UserRequest request, CancellationToken token)
     {
         var user = request.Adapt<PosUser>();
         await context.SaveChangesAsync(token);
@@ -43,19 +42,19 @@ public class SaveUserHandler : IRequestHandler<SaveUser, Result<PosUser>>
         }
         catch (DbUpdateException ex)
         {
-            return new Result<PosUser>(new EntityExistsException());
+            throw new EntityExistsException();
         }
 
         return user;
     }
 
-    private async Task<Result<PosUser>> UpdateUserInfo(UserRequest request, CancellationToken token)
+    private async Task<PosUser> UpdateUserInfo(UserRequest request, CancellationToken token)
     {
         var user =
             await context.Users.FirstOrDefaultAsync(x => x.Id == request.Id && !x.IsDeleted, cancellationToken: token);
 
         if (user is null)
-            return new Result<PosUser>(new EntityNotFoundException(request.Id.ToString()));
+            throw new EntityNotFoundException(request.Id.ToString());
 
         request.Adapt(user, Config);
         context.Update(user);

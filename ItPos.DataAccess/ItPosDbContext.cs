@@ -104,10 +104,10 @@ public sealed class ItPosDbContext : DbContext
         }
     }
 
-    public DbSet<StudentInfo>? Students { get; set; }
-    public DbSet<Offer>? Offers { get; set; }
-    public DbSet<PosUser>? Users { get; set; }
-    public DbSet<Payment>? Payments { get; set; }
-    public DbSet<Form>? Forms { get; set; }
-    public DbSet<Application>? Applications { get; set; }
+    public DbSet<StudentInfo> Students { get; set; }
+    public DbSet<Offer> Offers { get; set; }
+    public DbSet<PosUser> Users { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+    public DbSet<Form> Forms { get; set; }
+    public DbSet<Application> Applications { get; set; }
 }

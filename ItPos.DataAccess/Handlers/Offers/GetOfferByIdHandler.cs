@@ -1,14 +1,13 @@
 ﻿using ItPos.Domain.Exceptions;
 using ItPos.Domain.Models;
-using LanguageExt.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ItPos.DataAccess.Handlers.Offers;
 
-public record GetOfferById(Guid Id) : IRequest<Result<Offer>>;
+public record GetOfferById(Guid Id) : IRequest<Offer>;
 
-public class GetOfferByIdHandler : IRequestHandler<GetOfferById, Result<Offer>>
+public class GetOfferByIdHandler : IRequestHandler<GetOfferById, Offer>
 {
     private readonly ItPosDbContext context;
 
@@ -17,12 +16,12 @@ public class GetOfferByIdHandler : IRequestHandler<GetOfferById, Result<Offer>>
         this.context = context;
     }
 
-    public async Task<Result<Offer>> Handle(GetOfferById request,
+    public async Task<Offer> Handle(GetOfferById request,
         CancellationToken cancellationToken)
     {
-        var client =
+        var offer =
             await context.Offers.AsNoTracking().Where(c => !c.IsDeleted)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
-        return client ?? new Result<Offer>(new EntityNotFoundException(request.Id.ToString()));
+        return offer ?? throw new EntityNotFoundException(request.Id.ToString());
     }
 }

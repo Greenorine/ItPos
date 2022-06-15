@@ -1,11 +1,10 @@
-﻿using ItPos.Api.Extensions;
-using ItPos.DataAccess.Handlers.Student;
+﻿using ItPos.DataAccess.Handlers.Student;
 using ItPos.Domain.DTO;
-using ItPos.Domain.DTO.StudentInfo;
+using ItPos.Domain.DTO.V1.StudentInfo;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ItPos.Api.Controllers.Clients;
+namespace ItPos.Api.Controllers.V1.Clients;
 
 [Route("api/v1/[controller]")]
 [ApiController]
@@ -22,7 +21,7 @@ public class StudentsController : ControllerBase
     public async Task<IActionResult> Get(RequestWithId request, CancellationToken token)
     {
         var result = await mediator.Send(new GetStudentById(request.Id), token);
-        return result.ToResponse();
+        return Ok(result);
     }
     
     [HttpPost("get_all")]
@@ -36,7 +35,7 @@ public class StudentsController : ControllerBase
     public async Task<IActionResult> Save(StudentInfoRequest request, CancellationToken token)
     {
         var result = await mediator.Send(new SaveStudent(request), token);
-        return result.ToResponse();
+        return Ok(result);
     }
     
     [HttpPost("delete")]
