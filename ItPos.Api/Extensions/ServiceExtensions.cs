@@ -68,7 +68,7 @@ public static class ServiceExtensions
     
     public static void AddDbModel(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddEntityFrameworkNpgsql().AddDbContext<ItPosDbContext>(options =>
+        services.AddDbContext<ItPosDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString("pos_connection")!,
                 opts => opts.MigrationsAssembly("ItPos.Api"));

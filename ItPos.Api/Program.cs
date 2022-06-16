@@ -53,7 +53,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors(c => c.AllowAnyOrigin());
+app.UseCors(c => c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 using (var scope = app.Services.CreateScope())
