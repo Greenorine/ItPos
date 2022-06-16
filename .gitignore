@@ -16,3 +16,7 @@ ItPos.Domain/obj/
 ItPos.Test/bin/
 
 ItPos.Test/obj/
+
+ItPos.Infrastructure/bin
+
+ItPos.Infrastructure/obj
