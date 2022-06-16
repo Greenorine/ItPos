@@ -27,7 +27,7 @@ public class AuthController : ControllerBase
     #region SwaggerDoc
 
     /// <summary>
-    /// Позволяет получить юзера по Id.
+    /// Позволяет авторизоваться и получить токен.
     /// </summary>
     /// <param name="request">Запрос с логином и паролем</param>
     /// <response code="200">Информация о токене</response>
