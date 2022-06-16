@@ -31,6 +31,8 @@ builder.Services.AddMapster();
 builder.Services.AddMediatR(typeof(AssemblyDummy).GetTypeInfo().Assembly);
 builder.Services.AddDbModel(builder.Configuration);
 
+builder.Services.AddCors();
+
 var app = builder.Build();
 app.UseSerilogRequestLogging();
 if (app.Environment.IsDevelopment())
@@ -51,6 +53,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors(c => c.AllowAnyOrigin());
 app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 using (var scope = app.Services.CreateScope())
