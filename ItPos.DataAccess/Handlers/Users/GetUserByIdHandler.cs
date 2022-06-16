@@ -3,7 +3,7 @@ using ItPos.Domain.Models.User;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ItPos.DataAccess.User;
+namespace ItPos.DataAccess.Handlers.Users;
 
 public record GetUserById(Guid Id) : IRequest<PosUser>;
 
@@ -22,6 +22,6 @@ public class GetUserByIdHandler : IRequestHandler<GetUserById, PosUser>
         var client =
             await context.Users.AsNoTracking().Where(u => !u.IsDeleted)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
-        return client ?? throw new EntityNotFoundException(request.Id.ToString());
+        return client ?? throw new EntityNotFoundException(nameof(request.Id), request.Id.ToString());
     }
 }

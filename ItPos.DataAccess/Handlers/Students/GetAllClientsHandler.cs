@@ -1,12 +1,9 @@
-﻿using ItPos.DataAccess.User;
-using ItPos.Domain.DTO.V1.StudentInfo;
-using ItPos.Domain.Models;
-using ItPos.Domain.Models.User;
+﻿using ItPos.Domain.DTO.V1.StudentInfo;
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ItPos.DataAccess.Handlers.Student;
+namespace ItPos.DataAccess.Handlers.Students;
 
 public record GetAllStudents : IRequest<List<StudentInfoShortResponse>>;
 

@@ -5,7 +5,7 @@ using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ItPos.DataAccess.User;
+namespace ItPos.DataAccess.Handlers.Users;
 
 public record SaveUser(UserRequest UserData) : IRequest<PosUser>;
 
@@ -54,7 +54,7 @@ public class SaveUserHandler : IRequestHandler<SaveUser, PosUser>
             await context.Users.FirstOrDefaultAsync(x => x.Id == request.Id && !x.IsDeleted, cancellationToken: token);
 
         if (user is null)
-            throw new EntityNotFoundException(request.Id.ToString());
+            throw new EntityNotFoundException(nameof(request.Id), request.Id.ToString());
 
         request.Adapt(user, Config);
         context.Update(user);

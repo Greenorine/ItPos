@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ItPos.DataAccess.Handlers.Student;
+namespace ItPos.DataAccess.Handlers.Students;
 
 public record DeleteStudentById(Guid Id) : INotification;
 

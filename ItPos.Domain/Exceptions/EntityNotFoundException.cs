@@ -2,7 +2,7 @@
 
 public class EntityNotFoundException : Exception
 {
-    public EntityNotFoundException(string? id) : base($"Не найдена сущность с Id = '{id}'")
+    public EntityNotFoundException(string field, string? id) : base($"Не найдена сущность с {field} = '{id}'")
     {
     }
 }

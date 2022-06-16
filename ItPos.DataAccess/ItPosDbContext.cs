@@ -109,5 +109,6 @@ public sealed class ItPosDbContext : DbContext
     public DbSet<PosUser> Users { get; set; }
     public DbSet<Payment> Payments { get; set; }
     public DbSet<Form> Forms { get; set; }
+    public DbSet<Face> Faces { get; set; }
     public DbSet<Application> Applications { get; set; }
 }

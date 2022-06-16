@@ -22,12 +22,12 @@ public class SaveFormHandler : IRequestHandler<SaveForm, Form>
 
     public async Task<Form> Handle(SaveForm request, CancellationToken token)
     {
-        Form Form;
+        Form form;
         if (!request.FormData.Id.HasValue)
-            Form = await CreateForm(request.FormData, token);
+            form = await CreateForm(request.FormData, token);
         else
-            Form = await UpdateForm(request.FormData, token);
-        return Form;
+            form = await UpdateForm(request.FormData, token);
+        return form;
     }
 
     private async Task<Form> CreateForm(FormRequest request, CancellationToken token)
@@ -54,7 +54,7 @@ public class SaveFormHandler : IRequestHandler<SaveForm, Form>
                 cancellationToken: token);
 
         if (form is null)
-            throw new EntityNotFoundException(request.Id.ToString());
+            throw new EntityNotFoundException(nameof(request.Id), request.Id.ToString());
 
         request.Adapt(form);
         context.Update(form);

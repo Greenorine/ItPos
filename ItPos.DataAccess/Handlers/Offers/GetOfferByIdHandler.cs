@@ -22,6 +22,6 @@ public class GetOfferByIdHandler : IRequestHandler<GetOfferById, Offer>
         var offer =
             await context.Offers.AsNoTracking().Where(c => !c.IsDeleted)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
-        return offer ?? throw new EntityNotFoundException(request.Id.ToString());
+        return offer ?? throw new EntityNotFoundException(nameof(request.Id), request.Id.ToString());
     }
 }

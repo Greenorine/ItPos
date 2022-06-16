@@ -2,8 +2,9 @@
 
 namespace ItPos.Domain.Models.User;
 
-public class PosUser : IEntity
+public class PosUser : IEntity, IUser
 {
+    public string Name { get; set; }
     public string Login { get; set; }
     public string Password { get; set; }
     public string Roles { get; set; }

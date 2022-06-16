@@ -4,7 +4,7 @@ using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ItPos.DataAccess.Handlers.Student;
+namespace ItPos.DataAccess.Handlers.Students;
 
 public record GetStudentById(Guid Id) : IRequest<StudentInfoResponse>;
 
@@ -24,7 +24,7 @@ public class GetClientByIdHandler : IRequestHandler<GetStudentById, StudentInfoR
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
 
         if (studentInfo is null)
-            throw new EntityNotFoundException(request.Id.ToString());
+            throw new EntityNotFoundException(nameof(request.Id), request.Id.ToString());
         
         return studentInfo.Adapt<StudentInfoResponse>();
     }

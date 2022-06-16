@@ -22,6 +22,6 @@ public class GetFormByIdHandler : IRequestHandler<GetFormById, Form>
         var form =
             await context.Forms.AsNoTracking().Where(c => !c.IsDeleted)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
-        return form ?? throw new EntityNotFoundException(request.Id.ToString());
+        return form ?? throw new EntityNotFoundException(nameof(request.Id), request.Id.ToString());
     }
 }

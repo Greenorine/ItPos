@@ -54,7 +54,7 @@ public class SaveOfferHandler : IRequestHandler<SaveOffer, Offer>
                 cancellationToken: token);
 
         if (offer is null)
-            throw new EntityNotFoundException(request.Id.ToString());
+            throw new EntityNotFoundException(nameof(request.Id), request.Id.ToString());
 
         request.Adapt(offer);
         context.Update(offer);

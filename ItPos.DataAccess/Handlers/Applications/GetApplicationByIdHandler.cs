@@ -22,6 +22,6 @@ public class GetApplicationByIdHandler : IRequestHandler<GetApplicationById, App
         var application =
             await context.Applications.AsNoTracking().Where(c => !c.IsDeleted)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
-        return application ?? throw new EntityNotFoundException(request.Id.ToString());
+        return application ?? throw new EntityNotFoundException(nameof(request.Id), request.Id.ToString());
     }
 }

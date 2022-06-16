@@ -1,11 +1,16 @@
 ﻿using System.Reflection;
-using ItPos.Domain;
+using System.Text;
+using ItPos.DataAccess;
 using ItPos.Domain.Models.Response;
 using Mapster;
 using MapsterMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using AssemblyDummy = ItPos.Domain.AssemblyDummy;
 
 namespace ItPos.Api.Extensions;
 
@@ -39,6 +44,35 @@ public static class ServiceExtensions
         typeAdapterConfig.Scan(typeof(AssemblyDummy).Assembly);
         var mapperConfig = new Mapper(typeAdapterConfig);
         services.AddSingleton<IMapper>(mapperConfig);
+    }
+    
+    public static void AddJwtSecurity(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"]!))
+                };
+            });
+    }
+    
+    public static void AddDbModel(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddEntityFrameworkNpgsql().AddDbContext<ItPosDbContext>(options =>
+        {
+            options.UseNpgsql(configuration.GetConnectionString("pos_connection")!,
+                opts => opts.MigrationsAssembly("ItPos.Api"));
+        });
     }
     
     public static void AddSwagger(this IServiceCollection services)

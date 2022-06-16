@@ -1,4 +1,4 @@
-﻿using ItPos.DataAccess.User;
+﻿using ItPos.DataAccess.Handlers.Users;
 using ItPos.Domain.DTO.V1.StudentInfo;
 using ItPos.Domain.DTO.V1.User;
 using ItPos.Domain.Exceptions;
@@ -7,7 +7,7 @@ using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ItPos.DataAccess.Handlers.Student;
+namespace ItPos.DataAccess.Handlers.Students;
 
 public record SaveStudent(StudentInfoRequest StudentData) : IRequest<StudentInfoResponse>;
 
@@ -65,7 +65,7 @@ public class SaveStudentHandler : IRequestHandler<SaveStudent, StudentInfoRespon
                 cancellationToken: token);
 
         if (studentInfo is null)
-            throw new EntityNotFoundException(request.Id.ToString());
+            throw new EntityNotFoundException(nameof(request.Id), request.Id.ToString());
 
         var user = await context.Users.FirstOrDefaultAsync(u => u.Id == studentInfo.User.Id, cancellationToken: token);
         try
@@ -90,6 +90,7 @@ public class SaveStudentHandler : IRequestHandler<SaveStudent, StudentInfoRespon
     {
         return new UserRequest
         {
+            Name = request.FullName,
             Group = request.Institute.ToString(),
             Login = request.Login,
             Password = request.Password,

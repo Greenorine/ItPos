@@ -1,0 +1,17 @@
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\bin\Debug\net6.0\ItPos.Infrastructure.deps.json
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\bin\Debug\net6.0\ItPos.Infrastructure.dll
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\bin\Debug\net6.0\ItPos.Infrastructure.pdb
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\bin\Debug\net6.0\ItPos.DataAccess.dll
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\bin\Debug\net6.0\ItPos.Domain.dll
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\bin\Debug\net6.0\ItPos.DataAccess.pdb
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\bin\Debug\net6.0\ItPos.Domain.pdb
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\obj\Debug\net6.0\ItPos.Infrastructure.csproj.AssemblyReference.cache
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\obj\Debug\net6.0\ItPos.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\obj\Debug\net6.0\ItPos.Infrastructure.AssemblyInfoInputs.cache
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\obj\Debug\net6.0\ItPos.Infrastructure.AssemblyInfo.cs
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\obj\Debug\net6.0\ItPos.Infrastructure.csproj.CoreCompileInputs.cache
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\obj\Debug\net6.0\ItPos.Infrastructure.csproj.CopyComplete
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\obj\Debug\net6.0\ItPos.Infrastructure.dll
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\obj\Debug\net6.0\refint\ItPos.Infrastructure.dll
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\obj\Debug\net6.0\ItPos.Infrastructure.pdb
+F:\Прога\приколы\ItPos\ItPos.Infrastructure\obj\Debug\net6.0\ref\ItPos.Infrastructure.dll

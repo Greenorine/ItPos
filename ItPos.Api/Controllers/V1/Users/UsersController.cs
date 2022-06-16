@@ -1,4 +1,4 @@
-﻿using ItPos.DataAccess.User;
+﻿using ItPos.DataAccess.Handlers.Users;
 using ItPos.Domain.DTO;
 using ItPos.Domain.DTO.V1.User;
 using MediatR;

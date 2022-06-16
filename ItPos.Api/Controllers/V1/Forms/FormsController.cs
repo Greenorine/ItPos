@@ -1,5 +1,4 @@
 ﻿using ItPos.DataAccess.Handlers.Forms;
-using ItPos.DataAccess.Handlers.Offers;
 using ItPos.Domain.DTO;
 using ItPos.Domain.DTO.V1.Form;
 using MediatR;

@@ -1,4 +1,4 @@
-﻿using ItPos.DataAccess.Handlers.Student;
+﻿using ItPos.DataAccess.Handlers.Students;
 using ItPos.Domain.DTO;
 using ItPos.Domain.DTO.V1.StudentInfo;
 using MediatR;

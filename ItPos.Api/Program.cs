@@ -2,31 +2,42 @@ using System.Reflection;
 using ItPos.Api.Extensions;
 using ItPos.DataAccess;
 using ItPos.Domain.Models.Response;
+using ItPos.Infrastructure.Services.Security;
 using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((ctx, config) =>
+{
+    config.MinimumLevel.Debug()
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+        .Enrich.FromLogContext()
+        .WriteTo.Console();
+});
 
 builder.Services.AddControllersWithErrorHandlers();
 
 builder.Services.AddSwagger();
 
+builder.Services.AddSingleton<ITokenManager, JwtTokenManager>();
+builder.Services.AddJwtSecurity(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddMediatR(typeof(AssemblyDummy).GetTypeInfo().Assembly);
 builder.Services.AddMapster();
-builder.Services.AddEntityFrameworkNpgsql().AddDbContext<ItPosDbContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("pos_connection")!,
-        opts => opts.MigrationsAssembly("ItPos.Api"));
-});
+builder.Services.AddMediatR(typeof(AssemblyDummy).GetTypeInfo().Assembly);
+builder.Services.AddDbModel(builder.Configuration);
 
 var app = builder.Build();
+app.UseSerilogRequestLogging();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseExceptionHandler(c => c.Run(async context =>
@@ -40,10 +51,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 using (var scope = app.Services.CreateScope())
 {
