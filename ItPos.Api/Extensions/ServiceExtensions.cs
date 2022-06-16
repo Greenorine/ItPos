@@ -113,5 +113,6 @@ public static class ServiceExtensions
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             swagger.IncludeXmlComments(xmlPath);
         });
+        services.AddSwaggerGenNewtonsoftSupport();
     }
 }
