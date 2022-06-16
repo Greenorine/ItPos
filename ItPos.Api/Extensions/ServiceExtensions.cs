@@ -82,7 +82,7 @@ public static class ServiceExtensions
             swagger.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "POS Client API v1"
+                Title = "ItPos API v1"
             });
 
             swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
@@ -109,6 +109,9 @@ public static class ServiceExtensions
                     Array.Empty<string>()
                 }
             });
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            swagger.IncludeXmlComments(xmlPath);
         });
     }
 }
